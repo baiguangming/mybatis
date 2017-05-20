@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.3.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd
+		http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.3.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.3.xsd">
+	<!-- 定义Spring与MyBatis整合的操作控制，此时数据库的连接对象取得由Spring负责 -->
+	<bean id="sessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<!-- Mybatis操作需要有数据库连接池的支持，所以此处将之前配置的C3P0的连接池设置到此类之中 -->
+		<property name="dataSource" ref="dataSource" />
+		<property name="mapperLocations" value="classpath:cn/mldn/mapping/*.xml"/>
+		<!-- 配置所有资源文件的保存路径的资源匹配符 -->
+		<property name="configLocation" value="classpath:mybatis/mybatis.cfg.xml" />
+	</bean>
+	
+	<!-- 定义数据层子类的自动实现控制，这样才可以将DAO接口与映射文件整合在一起，该bean不需要做引用 -->
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<!-- 存放在cn.mldn.dao下的包接口才可以被自动的映射实现子类 -->
+		<property name="basePackage" value="cn.mldn.dao"/>
+		<!-- 定义本次要使用的SessionFactory类型的对象，直接以Bean的名称进行导入 -->
+		<property name="sqlSessionFactoryBeanName" value="sessionFactory"/>
+	</bean>  
+
+	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+		<property name="driverClass" value="${db.driverClass}" />	<!-- 数据库的连接驱动程序 -->
+		<property name="jdbcUrl" value="${db.jdbcUrl}" />	<!-- 数据库的连接地址信息 -->
+		<property name="user" value="${db.username}" />	<!-- 数据库的连接用户名 -->
+		<property name="password" value="${db.password}" />	<!-- 连接密码 -->
+		<property name="maxPoolSize" value="${db.maxPoolSize}" />	<!-- 最大的连接池供给的连接数量 -->
+		<property name="minPoolSize" value="${db.minPoolSize}" />	<!-- 最小维持连接数量 -->
+		<property name="initialPoolSize" value="${db.initialPoolSize}" />	<!-- 数据库连接池初始化大小 -->
+		<property name="maxIdleTime" value="${db.maxIdleTime}" />	<!-- 用户最大等待时间 -->
+	</bean>
+
+</beans>

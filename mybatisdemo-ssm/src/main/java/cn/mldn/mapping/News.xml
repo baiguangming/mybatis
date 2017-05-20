@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.mldn.dao.INewsDAO"> 
+	<select id="findAllSplit" parameterType="map" resultType="News">
+		SELECT nid,title,note FROM news
+		WHERE ${column} LIKE #{keyWord} LIMIT #{start},#{lineSize}
+	</select> 
+	<insert id="doCreate" parameterType="News" keyProperty="nid" useGeneratedKeys="true">
+		INSERT INTO news(title,note) VALUES (#{title},#{note}) ;
+	</insert>
+</mapper>
